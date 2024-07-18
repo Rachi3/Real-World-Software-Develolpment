@@ -36,6 +36,8 @@ public class BankStatementAnalyzer {
         System.out.println("The min transaction from"+startDate+" to "+endDate+" is "+
                 bankStatementProcessor.findMinTransactionAmountInRange(startDate,endDate).getDate()+
                 " Amount is "+bankStatementProcessor.findMinTransactionAmountInRange(startDate,endDate).getAmount());
+
+        bankStatementProcessor.printHistogram();
     }
 
 

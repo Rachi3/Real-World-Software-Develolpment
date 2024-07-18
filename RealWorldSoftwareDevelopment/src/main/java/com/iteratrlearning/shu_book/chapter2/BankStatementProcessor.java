@@ -3,7 +3,9 @@ package main.java.com.iteratrlearning.shu_book.chapter2;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BankStatementProcessor {
     private final List<BankTransaction> bankTransactions;
@@ -57,7 +59,7 @@ public class BankStatementProcessor {
 
             for(final BankTransaction bt : bankTransactions) {
                 LocalDate targetDate=bt.getDate();
-                
+
                 if(!targetDate.isBefore(LstartDate) && !targetDate.isAfter(LendDate)) {
                     total+=bt.getAmount();
                 }//범위내의 모든값 더하기
@@ -118,5 +120,59 @@ public class BankStatementProcessor {
     }
 
 
+    private Map<String,Double> GroupByMonth(){
+        //달별로
+        Map<String,Double> grouyByMonth=new HashMap<>();
+
+        for(final BankTransaction bt : bankTransactions) {
+            if(grouyByMonth.get(bt.getDate().getMonth().toString()) == null) {
+                grouyByMonth.put(bt.getDate().getMonth().toString(), bt.getAmount());
+            }else{
+                grouyByMonth.merge(bt.getDate().getMonth().toString(), bt.getAmount(), Double::sum);
+            }
+        }
+
+        return grouyByMonth;
+    }
+
+    private Map<String,Double> GroupByDescription(){
+        //달별로
+        Map<String,Double> grouyByDescription=new HashMap<>();
+
+        for(final BankTransaction bt : bankTransactions) {
+            if(grouyByDescription.get(bt.getDescription()) == null) {
+                grouyByDescription.put(bt.getDescription(), bt.getAmount());
+            }else{
+                grouyByDescription.merge(bt.getDescription(), bt.getAmount(), Double::sum);
+            }
+        }
+
+        return grouyByDescription;
+    }
+
+    public void printHistogram() {
+        // 달별 그룹화
+        Map<String, Double> groupedByMonth = GroupByMonth();
+
+        // 설명별 그룹화
+        Map<String, Double> groupedByDescription = GroupByDescription();
+
+        // 달별 그룹 내에서 설명별로 출력
+        System.out.println("Histogram by Month and Description:");
+        for (String month : groupedByMonth.keySet()) {
+            System.out.println("Month: " + month);
+
+            double totalInMonth = groupedByMonth.get(month);
+
+            // 각 설명에 대해 해당 달의 총액과 비교하여 출력
+            for (Map.Entry<String, Double> entry : groupedByDescription.entrySet()) {
+                String description = entry.getKey();
+                double amount = entry.getValue();
+                System.out.printf("  %s: %.2f \n", description, amount);
+            }
+
+            System.out.println(month+"'s Total: "+totalInMonth);
+        }
+    }
 
 }
